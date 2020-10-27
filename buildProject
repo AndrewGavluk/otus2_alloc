@@ -1,0 +1,6 @@
+#!/bin/bash
+mkdir -p buildRelease/ && cd buildRelease/
+cmake ..
+cmake --build .
+cmake --build . --target test
+cmake --build . --target package
