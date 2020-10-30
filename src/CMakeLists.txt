@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.2)
 
 add_executable(custom_allocator main.cpp)
 set_target_properties(custom_allocator PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQIRED ON)
-target_link_libraries(custom_allocator PRIVATE libL1)
 target_link_libraries(custom_allocator PRIVATE libL2)
 
 if(MSVC)

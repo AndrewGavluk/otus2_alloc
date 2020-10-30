@@ -1,11 +1,1 @@
-﻿#include "hw2Arr.h"
-
-
-
-
-
-
-
-
-
-
+#include "hw2Arr.h"
