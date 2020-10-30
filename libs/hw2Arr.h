@@ -84,7 +84,7 @@ hw2Array(size_type size_value) : m_size{size_value},
 template_T_Alloc
 hw2Array<T, Alloc>::
 hw2Array(size_type size_value, T value) : hw2Array(size_value){
-    for (size_type i=0; i<m_size; m_allocator->construct(&m_data[++i], value));
+    for (size_type i=0; i<m_size; m_allocator->construct(&m_data[i++], value));
 }
 
 template_T_Alloc
@@ -103,7 +103,7 @@ hw2Array(const T& value):m_size{0},
                         m_nonempty_size{value.m_size},
                         m_allocator{std::make_unique<Alloc>()},
                         m_data{m_allocator->allocate(m_size)}{
-    for (size_type i=1; i<m_size; ++i)
+    for (size_type i=0; i<m_size; ++i)
         m_allocator->construct(&m_data[i], value[i]);
 }
 
