@@ -32,8 +32,8 @@ class hw2Array
     ~hw2Array();
     hw2Array<T, Alloc>& operator = (const_reference);
     hw2Array<T, Alloc>& operator = (r_reference);
-    bool operator == (const_reference) const;
-    bool operator != (const_reference) const;
+    bool operator == (const hw2Array&) const;
+    bool operator != (hw2Array&) const;
     size_type capacity ()const;
     size_type size() const;
     void push_back(const_reference);
@@ -133,11 +133,11 @@ operator = (T&& rv){
 
 template_T_Alloc
 bool hw2Array<T, Alloc>::
-operator == (const T& val) const{
+operator == (const hw2Array& val) const{
     if (val.m_nonempty_size != m_nonempty_size)
         return false;
 
-    for (int i = 0; i<m_nonempty_size; ++i)
+    for (size_type i = 0; i<m_nonempty_size; ++i)
         if (m_data[i] != val.m_data[i])
             return false;
 
@@ -146,7 +146,7 @@ operator == (const T& val) const{
 
 template_T_Alloc
 bool hw2Array<T, Alloc>::
-operator != (const T& val) const{
+operator != (hw2Array& val) const{
     return !operator == (val);
 }
 

@@ -51,8 +51,8 @@ void t_ConstructorByInitList(const std::initializer_list<T>& value){
 }
 
 TEST(gtest_testhw2Arr, testConstructorByInitializerList){
-    t_ConstructorByInitList<int>(std::initializer_list<int>{1,2,3,4,5});
-    t_ConstructorByInitList<double>(std::initializer_list<double>{1.0,2.0,3.0,4.0,5.0});
+    t_ConstructorByInitList<int>({1,2,3,4,5});
+    t_ConstructorByInitList<double>({1.0,2.0,3.0,4.0,5.0});
 }
 
 template_T_Alloc_default
@@ -71,8 +71,8 @@ void t_CopyConstructor(const std::initializer_list<T>& value){
 }
 
 TEST(gtest_testhw2Arr, testCopyConstructor){
-    t_CopyConstructor<int>(std::initializer_list<int>{1,2,3,4,5});
-    t_CopyConstructor<double>(std::initializer_list<double>{1.0,2.0,3.0,4.0,5.0});
+    t_CopyConstructor<int>({1,2,3,4,5});
+    t_CopyConstructor<double>({1.0,2.0,3.0,4.0,5.0});
 }
 
 template_T_Alloc_default
@@ -85,9 +85,48 @@ void t_MoveConstructor(const std::initializer_list<T>& value){
 }
 
 TEST(gtest_testhw2Arr, testMoveConstructor){
-    t_MoveConstructor<int>(std::initializer_list<int>{1,2,3,4,5});
-    t_MoveConstructor<double>(std::initializer_list<double>{1.0,2.0,3.0,4.0,5.0});
+    t_MoveConstructor<int>({1,2,3,4,5});
+    t_MoveConstructor<double>({1.0,2.0,3.0,4.0,5.0});
 }
+
+template_T_Alloc_default
+void t_operatorEql(const std::initializer_list<T>& value,  const std::initializer_list<T>& value2){ 
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value)); // 1-st hw2Array build on value
+    auto testint1 = std::make_unique< hw2Array<T, Alloc> > (* testint.get());      /* 2-nd hw2Array copy of 1-st, 
+                                                                                            expected eql to 1-st*/
+
+    std::unique_ptr< hw2Array<T, Alloc> > testint2 (new hw2Array<T, Alloc> (value2) ); /* 3-rd hw2Array build on value2, 
+                                                                                            expected to not eql to 1-st
+                                                                                            (value should not eql value2)*/
+
+    ASSERT_TRUE( *(testint.get()) == *(testint1.get()));
+    ASSERT_FALSE( *(testint1.get()) == *(testint2.get()));
+}
+
+TEST(gtest_testhw2Arr, testOperatorEql){
+    t_operatorEql<int>({1,2,3,4,5},     {1,2,3,4,5,6});
+    t_operatorEql<double>({1.0,2.0,3.0,4.0,5.0},   {1.0,2.0,3.0,4.0,5.0,6.0});
+}
+
+template_T_Alloc_default
+void t_operatorNotEql(const std::initializer_list<T>& value,  const std::initializer_list<T>& value2){ 
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value)); // 1-st hw2Array build on value
+    auto testint1 = std::make_unique< hw2Array<T, Alloc> > (* testint.get());      /* 2-nd hw2Array copy of 1-st, 
+                                                                                            expected eql to 1-st*/
+
+    std::unique_ptr< hw2Array<T, Alloc> > testint2 (new hw2Array<T, Alloc> (value2) ); /* 3-rd hw2Array build on value2, 
+                                                                                            expected to not eql to 1-st
+                                                                                            (value should not eql value2)*/
+
+    ASSERT_FALSE( *(testint.get()) != *(testint1.get()));
+    ASSERT_TRUE( *(testint1.get()) != *(testint2.get()));
+}
+
+TEST(gtest_testhw2Arr, testOperatorNotEql){
+    t_operatorNotEql<int>({1,2,3,4,5},     {1,2,3,4,5,6});
+    t_operatorNotEql<double>({1.0,2.0,3.0,4.0,5.0},   {1.0,2.0,3.0,4.0,5.0,6.0});
+}
+
 
 
 int main(int argc, char** argv) {
