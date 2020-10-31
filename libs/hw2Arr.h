@@ -34,7 +34,7 @@ class hw2Array
     hw2Array& operator = (hw2Array&&);
     bool operator == (const hw2Array&) const;
     bool operator != (hw2Array&) const;
-    size_type capacity ()const;
+    size_type capacity() const;
     size_type size() const;
     void push_back(const_reference);
     void pop_back();

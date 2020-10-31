@@ -161,6 +161,29 @@ TEST(gtest_testhw2Arr, testOperatorMoveAssignment){
     t_operatorMoveAssignment<double>({1.0, 2.0, 3.0, 4.0, 5.0});
 }
 
+template_T_Alloc_default
+void t_capacity(const std::initializer_list<T>& value){ 
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value)); 
+    ASSERT_TRUE(testint->capacity() == value.size());
+}
+
+TEST(gtest_testhw2Arr, testCapacity){
+    t_capacity<int>({1,2,3,4,5});
+    t_capacity<double>({1.0,2.0,3.0,4.0,5.0});
+}
+
+template_T_Alloc_default
+void t_size1(const std::initializer_list<T>& value){ 
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value)); 
+    ASSERT_TRUE(testint->size() == value.size());
+}
+
+TEST(gtest_testhw2Arr, testSize){
+    t_size1<int>({1,2,3,4,5});
+    t_size1<double>({1.0,2.0,3.0,4.0,5.0});
+}
+
+
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
