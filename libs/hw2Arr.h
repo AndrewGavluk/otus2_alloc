@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
+#include <iostream>
 #define template_T_Alloc template <typename T, typename Alloc>
 
 namespace hw2Arr
@@ -26,8 +27,8 @@ class hw2Array
     explicit hw2Array(size_type);
     hw2Array(size_type, value_type);
     hw2Array(const std::initializer_list<value_type>&);
-    hw2Array(const_reference);
-    hw2Array(value_type&&);
+    explicit hw2Array(const hw2Array&);
+    hw2Array(hw2Array&&);
     ~hw2Array();
     hw2Array<T, Alloc>& operator = (const_reference);
     hw2Array<T, Alloc>& operator = (r_reference);
@@ -37,7 +38,7 @@ class hw2Array
     size_type size() const;
     void push_back(const_reference);
     void pop_back();
-    void swap (reference);
+    void swap (hw2Array&);
     reference front() const;
     reference back() const;
     reference operator [] (size_type pos);
@@ -56,7 +57,6 @@ class hw2Array
         size_type m_size;
         size_type m_nonempty_size;
         std::unique_ptr<Alloc> m_allocator;
-
         pointer m_data;
 };
 
@@ -99,16 +99,16 @@ hw2Array(const std::initializer_list<value_type>& value): m_size{value.size()},
 
 template_T_Alloc
 hw2Array<T, Alloc>::
-hw2Array(const T& value):m_size{0},
+hw2Array(const hw2Array& value):m_size{value.m_size},
                         m_nonempty_size{value.m_size},
                         m_allocator{std::make_unique<Alloc>()},
                         m_data{m_allocator->allocate(m_size)}{
     for (size_type i=0; i<m_size; ++i)
-        m_allocator->construct(&m_data[i], value[i]);
+        m_allocator->construct(&m_data[i], value.m_data[i]);
 }
 
 template_T_Alloc
-hw2Array<T, Alloc>::hw2Array(T&& value):m_size{0},
+hw2Array<T, Alloc>::hw2Array(hw2Array&& value):m_size{0},
                                                     m_nonempty_size{0},
                                                     m_data{nullptr}{
     value.swap(*this);
@@ -174,7 +174,7 @@ void hw2Array<T, Alloc>::pop_back(){
     (0 < m_nonempty_size) ? (m_allocator->destroy(m_data[m_nonempty_size--])) : (void)0;}
 
 template_T_Alloc
-void hw2Array<T, Alloc>::swap(reference ref1){
+void hw2Array<T, Alloc>::swap(hw2Array& ref1){
     std::swap(m_size,           ref1.m_size);
     std::swap(m_nonempty_size,  ref1.m_nonempty_size);
     std::swap(m_allocator,      ref1.m_allocator);
