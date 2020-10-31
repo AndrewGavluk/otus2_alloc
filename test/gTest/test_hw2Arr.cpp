@@ -127,6 +127,39 @@ TEST(gtest_testhw2Arr, testOperatorNotEql){
     t_operatorNotEql<double>({1.0,2.0,3.0,4.0,5.0},   {1.0,2.0,3.0,4.0,5.0,6.0});
 }
 
+template_T_Alloc_default
+void t_operatorCopyAssignment(const std::initializer_list<T>& value){
+    hw2Array<T, Alloc> testint {value};
+    hw2Array<T, Alloc> testint2 {};
+    testint2 = testint;
+    ASSERT_TRUE( testint == testint2);
+}
+
+TEST(gtest_testhw2Arr, testOperatorCopyAssignment){
+    t_operatorCopyAssignment<int>({1, 2, 3, 4, 5});
+    t_operatorCopyAssignment<double>({1.0, 2.0, 3.0, 4.0, 5.0});
+}
+
+template_T_Alloc_default
+void t_operatorMoveAssignment(const std::initializer_list<T>& value){
+    hw2Array<T, Alloc>  testint {value};
+    hw2Array<T, Alloc>  testint2 {value};
+    hw2Array<T, Alloc>  testint3 {};
+    hw2Array<T, Alloc>  testint4 {};
+    
+    testint2 = std::move(testint3);
+    
+    ASSERT_TRUE(testint2 == testint4);
+
+    ASSERT_TRUE(testint3 == testint );
+    ASSERT_TRUE(testint2 != testint );
+    ASSERT_TRUE(testint3 != testint4);
+}
+
+TEST(gtest_testhw2Arr, testOperatorMoveAssignment){
+    t_operatorMoveAssignment<int>({1, 2, 3, 4, 5});
+    t_operatorMoveAssignment<double>({1.0, 2.0, 3.0, 4.0, 5.0});
+}
 
 
 int main(int argc, char** argv) {

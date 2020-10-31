@@ -30,8 +30,8 @@ class hw2Array
     explicit hw2Array(const hw2Array&);
     hw2Array(hw2Array&&);
     ~hw2Array();
-    hw2Array<T, Alloc>& operator = (const_reference);
-    hw2Array<T, Alloc>& operator = (r_reference);
+    hw2Array& operator = (const hw2Array&);
+    hw2Array& operator = (hw2Array&&);
     bool operator == (const hw2Array&) const;
     bool operator != (hw2Array&) const;
     size_type capacity ()const;
@@ -114,11 +114,9 @@ hw2Array<T, Alloc>::hw2Array(hw2Array&& value):m_size{0},
     value.swap(*this);
 }
 
-//hw2Array& operator = (const_reference);
-
 template_T_Alloc
 hw2Array<T, Alloc>& hw2Array<T, Alloc>::
-operator = (const T& cr){
+operator = (const hw2Array& cr){
     hw2Array<T, Alloc> temp(cr);
     temp.swap(*this);
     return *this;
@@ -126,7 +124,7 @@ operator = (const T& cr){
 
 template_T_Alloc
 hw2Array<T, Alloc>&  hw2Array<T, Alloc>::
-operator = (T&& rv){
+operator = (hw2Array&& rv){
     rv.swap(*this);
     return *this;
 }
