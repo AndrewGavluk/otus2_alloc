@@ -169,8 +169,9 @@ push_back(const T& value){
 
 template_T_Alloc
 void hw2Array<T, Alloc>::pop_back(){
-    (0 < m_nonempty_size) ? (m_allocator->destroy(m_data[m_nonempty_size--])) : (void)0;}
+    (0 < m_nonempty_size) ? m_allocator->destroy(&m_data[m_nonempty_size--]) : (void)0;}
 
+    
 template_T_Alloc
 void hw2Array<T, Alloc>::swap(hw2Array& ref1){
     std::swap(m_size,           ref1.m_size);
@@ -190,28 +191,29 @@ T& hw2Array<T, Alloc>::front() const{
 template_T_Alloc
 T& hw2Array<T, Alloc>::back() const{
     if (m_size > 0)
-        return m_data[0];
+        return m_data[m_nonempty_size-1];
     else
         throw std::out_of_range("back call for empty hw2Array");
 }
 
 template_T_Alloc
 T& hw2Array<T, Alloc>::operator [] (size_type pos){
-    if (m_size > pos && 0 <= pos)
+    if (m_size > pos)
         return m_data[pos];
     else
-       if (m_size >= pos)
-            throw std::out_of_range("out_of_range: size of arr is less given number");
-        else
-            throw std::out_of_range("out_of_range: given number < 0");
+        throw std::out_of_range("out_of_range: size of arr is less given number");
+
 }
 
 template_T_Alloc
 void hw2Array<T, Alloc>::
 resize(size_type size){
-    if (m_nonempty_size < size){
-        for (size_type i = size; i < m_nonempty_size; m_allocator->destroy(&m_data[i++]));
+    if (m_size > size){
+        for (size_type i = size; i < m_size; ++i)
+            m_allocator->destroy(&m_data[i]);
         m_size = size;
+        if (m_nonempty_size>m_size) 
+             m_nonempty_size=m_size;
     }
     else{
         (m_size < size) ? expand(size): (void)0;
@@ -229,6 +231,18 @@ template_T_Alloc
 void hw2Array<T, Alloc>::clear(){
    for (size_type i = 0; i < m_nonempty_size; m_allocator->destroy(&m_data[i++]));
    m_size = 0;
+}
+
+template_T_Alloc
+void hw2Array<T, Alloc>::expand(size_type sizeToexpand){
+    auto newPlace = m_allocator->allocate(sizeToexpand);
+    for(size_type i=0; i<m_size; ++i){
+        m_allocator->construct(&newPlace[i], m_data[i]);
+        m_allocator->destroy(&m_data[i]);
+    }
+    m_allocator->deallocate(m_data, m_size);
+    m_data = newPlace;
+    m_size = sizeToexpand;
 }
 
 template_T_Alloc

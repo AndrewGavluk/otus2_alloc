@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <string>
 #include <gtest/gtest.h>
 #include "../../libs/hw2Arr.h"
 #define template_T_Alloc_default template <typename T, typename Alloc= std::allocator<T> >
@@ -33,8 +34,7 @@ template_T_Alloc_default
 void t_ConstructorBySizeAndValue (const size_t& size, const T& value){ 
     auto testint = std::make_unique< hw2Array<T, Alloc> > (size, value);
     for (size_t i=0; i<size; ++i){
-        ASSERT_TRUE(testint->operator[](i) == value);
-    }
+        ASSERT_TRUE(testint->operator[](i) == value);}
 }
 
 TEST(gtest_testhw2Arr, testConstructorBySizeAndValue){
@@ -183,7 +183,143 @@ TEST(gtest_testhw2Arr, testSize){
     t_size1<double>({1.0,2.0,3.0,4.0,5.0});
 }
 
+template_T_Alloc_default
+void checkArray(std::unique_ptr< hw2Array<T, Alloc> >& testint, const std::initializer_list<T>& value, size_t size) {
+    for (size_t i=0; i<size; ++i){
+        ASSERT_TRUE(testint->operator[](i) == *(value.begin() + i));}
+}
 
+template_T_Alloc_default
+void t_push_back(const std::initializer_list<T>& value, const T& toPush){
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value));
+    testint->push_back(toPush);
+
+    checkArray<T, Alloc>(testint, value, static_cast<size_t>(value.size()));
+
+    ASSERT_TRUE(testint->size()                    == (value.size()+1));
+    ASSERT_TRUE(testint->operator[](value.size())  == toPush);
+}
+
+TEST(gtest_testhw2Arr, testPush_back){
+    t_push_back<int>({1,2,3,4,5}, 6);
+    t_push_back<double>({1.0,2.0,3.0,4.0,5.0}, 6.0);
+}
+
+template_T_Alloc_default
+void t_pop_back(const std::initializer_list<T>& value){
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value));
+    testint->pop_back();
+
+    checkArray<T, Alloc>(testint, value, static_cast<size_t>(value.size()-1));  
+    ASSERT_TRUE(testint->size() == (value.size()-1));
+}
+
+TEST(gtest_testhw2Arr, testPop_back){
+    t_pop_back<int>({1, 2, 3, 4, 5});
+    t_pop_back<double>({1.0, 2.0, 3.0, 4.0, 5.0});
+}
+
+template_T_Alloc_default
+void t_front(const std::initializer_list<T>& value){
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value));
+    ASSERT_TRUE(testint->front() == *(value.begin()));
+}
+
+TEST(gtest_testhw2Arr, testFront_back){
+    t_front<int>({1, 2, 3, 4, 5});
+    t_front<double>({1.0, 2.0, 3.0, 4.0, 5.0});
+}
+
+template_T_Alloc_default
+void t_back(const std::initializer_list<T>& value){
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value));
+    ASSERT_TRUE(testint->back() == *(value.end() - 1));
+}
+
+TEST(gtest_testhw2Arr, testBack_back){
+    t_back<int>({1, 2, 3, 4, 5});
+    t_back<double>({1.0, 2.0, 3.0, 4.0, 5.0});
+}
+
+template_T_Alloc_default
+void t_bracketsOperatorCase(const  std::unique_ptr< hw2Array<T, Alloc> > & testint,  const size_t& size){
+
+    ASSERT_THROW(testint->operator[](size), std::out_of_range);
+    try{
+        testint->operator[](size); }
+    catch(const std::out_of_range& e) {
+        std::string what(e.what());
+        std::string expected("out_of_range: size of arr is less given number");
+        ASSERT_TRUE(what == expected);}
+    catch(...){
+        ASSERT_TRUE(false);}
+
+}
+
+template_T_Alloc_default
+void t_bracketsOperator(const std::initializer_list<T>& value){
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value));
+    checkArray<T, Alloc>(testint, value, static_cast<size_t>(value.size()-1)); 
+        
+    t_bracketsOperatorCase<T, Alloc> (testint, -1);
+    t_bracketsOperatorCase<T, Alloc> (testint, value.size());
+}
+
+TEST(gtest_testhw2Arr, testBrackets_back){
+    t_bracketsOperator<int>({1, 2, 3, 4, 5});
+    t_bracketsOperator<double>({1.0, 2.0, 3.0, 4.0, 5.0});
+}
+
+template_T_Alloc_default
+void t_resize(const std::initializer_list<T>& value){
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value));
+    size_t sizeValue{value.size()};
+
+    // resize to current value
+    testint->resize(sizeValue);
+    checkArray<T, Alloc>(testint, value, sizeValue); 
+
+    t_bracketsOperatorCase<T, Alloc> (testint, -1);
+    t_bracketsOperatorCase<T, Alloc> (testint, sizeValue);
+
+    // resize to bigger value 
+    testint->resize(sizeValue+1);
+    checkArray<T, Alloc>(testint, value, sizeValue);
+
+    t_bracketsOperatorCase<T, Alloc> (testint, -1);
+    t_bracketsOperatorCase<T, Alloc> (testint, value.size()+1);
+
+    // resize to less value
+    testint->resize(sizeValue-1);
+    checkArray<T, Alloc>(testint, value, sizeValue-2);
+
+    t_bracketsOperatorCase<T, Alloc> (testint, -1);
+    t_bracketsOperatorCase<T, Alloc> (testint, value.size()-1);
+
+    // resize to start value
+    testint->resize(sizeValue);
+    checkArray<T, Alloc>(testint, value, sizeValue-1);
+
+    t_bracketsOperatorCase<T, Alloc> (testint, -1);
+    t_bracketsOperatorCase<T, Alloc> (testint, value.size());
+}
+
+TEST(gtest_testhw2Arr, test_resize){
+    t_resize<int>({1, 2, 3, 4, 5});
+    t_resize<double>({1.0, 2.0, 3.0, 4.0, 5.0});
+}
+
+template_T_Alloc_default
+void t_reserve(const std::initializer_list<T>& value){
+    std::unique_ptr< hw2Array<T, Alloc> > testint (new hw2Array<T, Alloc> (value));
+    size_t sizeValue{value.size()};
+    
+    testint.reserve(sizeValue);
+    checkArray<T, Alloc>(testint, value, sizeValue);
+
+    testint.reserve(sizeValue+1);
+    checkArray<T, Alloc>(testint, value, sizeValue+1);
+}
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);
