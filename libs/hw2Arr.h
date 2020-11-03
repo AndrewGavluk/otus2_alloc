@@ -218,6 +218,7 @@ resize(size_type size){
     else{
         (m_size < size) ? expand(size): (void)0;
         for (size_type i = m_size; i < m_nonempty_size; m_allocator->construct(&m_data[i++]));
+
     }
 }
 
@@ -231,6 +232,7 @@ template_T_Alloc
 void hw2Array<T, Alloc>::clear(){
    for (size_type i = 0; i < m_nonempty_size; m_allocator->destroy(&m_data[i++]));
    m_size = 0;
+   m_nonempty_size = 0;
 }
 
 template_T_Alloc
