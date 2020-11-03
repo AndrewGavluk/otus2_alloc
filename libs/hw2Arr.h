@@ -171,7 +171,6 @@ template_T_Alloc
 void hw2Array<T, Alloc>::pop_back(){
     (0 < m_nonempty_size) ? m_allocator->destroy(&m_data[m_nonempty_size--]) : (void)0;}
 
-    
 template_T_Alloc
 void hw2Array<T, Alloc>::swap(hw2Array& ref1){
     std::swap(m_size,           ref1.m_size);
@@ -303,7 +302,6 @@ hw2Array<T, Alloc>::iterator::operator --(int){
     m_iterator_value--;
     return temp;
 }
-
 
 template_T_Alloc
 bool hw2Array<T, Alloc>::iterator::operator == (iterator &val) const{
