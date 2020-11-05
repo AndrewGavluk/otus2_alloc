@@ -26,7 +26,7 @@ class hw2Array
     hw2Array();
     explicit hw2Array(size_type);
     hw2Array(size_type, value_type);
-    hw2Array(const std::initializer_list<value_type>&);
+    hw2Array(const std::initializer_list<T>&);
     explicit hw2Array(const hw2Array&);
     hw2Array(hw2Array&&);
     ~hw2Array();
@@ -89,10 +89,11 @@ hw2Array(size_type size_value, T value) : hw2Array(size_value){
 
 template_T_Alloc
 hw2Array<T, Alloc>::
-hw2Array(const std::initializer_list<value_type>& value): m_size{value.size()},
+hw2Array(const std::initializer_list<T>& value): m_size{value.size()},
                                                     m_nonempty_size{value.size()},
                                                     m_allocator{std::make_unique<Alloc>()},
-                                                    m_data{m_allocator->allocate(m_size)} {
+                                                    m_data{m_allocator->allocate(m_size)} 
+                                                    {
     for (size_type i=0; i<m_size; ++i)
         m_allocator->construct(&m_data[i], *(value.begin() + i));
 }

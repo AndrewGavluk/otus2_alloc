@@ -16,8 +16,8 @@ class allocatorHW2
         using const_reference = const T&;
         using value_type = T;
 
-        ~allocatorHW2();
-        allocatorHW2();
+        ~allocatorHW2(){};
+        allocatorHW2(){};
         allocatorHW2(const allocatorHW2& other) : m_data(other.m_data), m_flags(other.m_flags) {};
         allocatorHW2(allocatorHW2&&other ){other.swap(*this);}
        
@@ -32,7 +32,7 @@ class allocatorHW2
         void destroy(pointer ptr); 
         size_t max_size() const;
 
-        T* allocate(size_type n, const void* = 0); 
+        T* allocate(size_type n); 
         void deallocate(void* ptr, size_type n);
 
     private:
@@ -78,8 +78,15 @@ size_t allocatorHW2<T, N>::max_size() const {
     return size_t(-1);
 }
 
-template_T_size 
-T* allocate(size_t n, const void* = 0){}
 
 template_T_size 
-void deallocate(void* ptr, size_t n){}
+T* allocatorHW2<T, N>::allocate(size_t n){
+    ++n;
+    return nullptr;
+}
+
+template_T_size 
+void allocatorHW2<T, N>::deallocate(void* ptr, size_t n){
+    (void)(ptr);
+    ++n;
+}
