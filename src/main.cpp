@@ -1,15 +1,18 @@
 #include <iostream>
+#include <map>
 #include "../libs/hw2Arr.h"
+#include "../libs/Alloc.h"
 
-#define UNUSED(expr) do { (void)(expr); } while (0)
 
-
-int main(void)
+int main()
 {
-    hw2Array<double> * hw2arr;
-    UNUSED(hw2arr);
-
-    hw2arr = new hw2Array<double>();
-    delete hw2arr;
-    return 0;
+    const int limmit = 10;
+    std::map<int, int> stdAlocatorSample;
+    
+    long long i_factorial{1};
+    for (int i=1; i<limmit; i++)
+    {
+        i_factorial*=i;
+        stdAlocatorSample.insert(std::make_pair(i, i_factorial));
+    } 
 }

@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <iostream>
 
 #define template_T_size template <typename T, size_t N>
 
@@ -33,7 +34,7 @@ class allocatorHW2
         size_t max_size() const;
 
         T* allocate(size_type n); 
-        void deallocate(void* ptr, size_type n);
+        void deallocate(T* ptr, size_type n);
 
     private:
 
@@ -78,15 +79,46 @@ size_t allocatorHW2<T, N>::max_size() const {
     return size_t(-1);
 }
 
-
 template_T_size 
 T* allocatorHW2<T, N>::allocate(size_t n){
-    ++n;
-    return nullptr;
+    
+    if (n == 0) return nullptr;
+    if (n > N) throw std::bad_alloc();
+
+    if (n > static_cast<size_t>(-1) / sizeof(T)) throw std::bad_array_new_length();
+
+    auto first = m_flags.begin();
+    size_t cnt = 0;
+    
+    for(auto &it : m_flags) {
+        if(it) cnt = 0;
+        else
+        {
+          if(cnt == 0)
+            first = &it;
+
+          if(++cnt == n) {
+            std::fill(first, (&it)+1, true);
+            auto pos = static_cast<size_t>(std::distance(m_flags.begin(), first));
+            auto p =  reinterpret_cast<T *>(&m_data[sizeof(T) * pos]);
+            if (!p)
+              throw std::bad_alloc(); // not enough memory
+            return p;
+          }
+        }
+          
+      }
+
+    throw std::bad_alloc(); // not enough memory
 }
 
 template_T_size 
-void allocatorHW2<T, N>::deallocate(void* ptr, size_t n){
-    (void)(ptr);
-    ++n;
+void allocatorHW2<T, N>::deallocate(T* ptr, size_t n){
+  if (!ptr) return;
+  int pos = ptr - reinterpret_cast<pointer>(&m_data[0]);
+  if(pos >= 0 && pos + static_cast<int>(n) < static_cast<int>(N)) {
+        auto first = m_flags.begin() + pos;
+        auto last  = first + static_cast<int>(n);
+        std::fill(first, last, false);
+  }
 }

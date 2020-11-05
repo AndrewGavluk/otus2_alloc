@@ -165,7 +165,7 @@ template_T_Alloc
 void hw2Array<T, Alloc>::
 push_back(const T& value){
     (m_size == m_nonempty_size) ? expand(m_size*2) : (void)0;
-    m_allocator->construct(&m_data[m_nonempty_size++], value);
+        m_allocator->construct(&m_data[m_nonempty_size++], value);
 }
 
 template_T_Alloc
