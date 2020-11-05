@@ -5,10 +5,12 @@
 
 #define template_T_size template <typename T, size_t N>
 
+namespace Homework2 {
 template <typename T, size_t N = 0>
 class allocatorHW2
 {
     public:
+
         using size_type = size_t;
         using difference_type = std::ptrdiff_t;
         using pointer = T*;
@@ -16,6 +18,7 @@ class allocatorHW2
         using reference = T&;
         using const_reference = const T&;
         using value_type = T;
+        using type = T;
 
         ~allocatorHW2(){};
         allocatorHW2(){};
@@ -36,6 +39,11 @@ class allocatorHW2
         T* allocate(size_type n); 
         void deallocate(T* ptr, size_type n);
 
+
+      template <class U>
+      struct rebind {
+        using other = allocatorHW2<U, N>;
+      };
     private:
 
         std::array<uint8_t, N * sizeof(value_type)> m_data;
@@ -105,10 +113,8 @@ T* allocatorHW2<T, N>::allocate(size_t n){
               throw std::bad_alloc(); // not enough memory
             return p;
           }
-        }
-          
-      }
-
+        }        
+    }
     throw std::bad_alloc(); // not enough memory
 }
 
@@ -121,4 +127,6 @@ void allocatorHW2<T, N>::deallocate(T* ptr, size_t n){
         auto last  = first + static_cast<int>(n);
         std::fill(first, last, false);
   }
+}
+
 }

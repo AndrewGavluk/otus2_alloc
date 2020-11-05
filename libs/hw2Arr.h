@@ -27,7 +27,7 @@ class hw2Array
     explicit hw2Array(size_type);
     hw2Array(size_type, value_type);
     hw2Array(const std::initializer_list<T>&);
-    explicit hw2Array(const hw2Array&);
+    hw2Array(const hw2Array&);
     hw2Array(hw2Array&&);
     ~hw2Array();
     hw2Array& operator = (const hw2Array&);
@@ -50,6 +50,7 @@ class hw2Array
     using hw2ArrayIter = iterator;
     iterator begin() const;
     iterator end() const;
+
 
     private:
         void expand(size_type);

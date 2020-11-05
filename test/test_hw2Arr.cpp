@@ -6,6 +6,8 @@
 #include "../libs/Alloc.h"
 #define template_T_Alloc_default template <typename T, typename Alloc= std::allocator<T> >
 
+using Homework2::allocatorHW2;
+
 template_T_Alloc_default
 void t_DefaultConstructor(){ 
     auto testint = std::make_unique< hw2Array<T, Alloc> > ();
