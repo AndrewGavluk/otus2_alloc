@@ -17,4 +17,4 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-  - curl -T custom_allocator-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uandrewgavluk:$BINTRAY_API_KEY "https://api.bintray.com/content/andrewgavluk/Otus-1/Otus-2_alloc/$TRAVIS_BUILD_NUMBER/custom_alloocator-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
+  - curl -T custom_allocator-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uandrewgavluk:$BINTRAY_API_KEY "https://api.bintray.com/content/andrewgavluk/Otus-1/otus-2_alloc/$TRAVIS_BUILD_NUMBER/custom_alloocator-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty;deb_component=main;deb_architecture=amd64;publish=1"
