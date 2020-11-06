@@ -9,7 +9,7 @@ void test(T& Map,const int& limmit){
     int i_factorial{1};
     for (int i=0; i<limmit; i++)
     {
-        i_factorial*=(i+1);
+        i_factorial*= (i>0)?i:1;
         Map[i] = i_factorial;
     }
 
@@ -43,7 +43,5 @@ int main()
     using customAlloc_ihw2Arr = hw2Array<int, customAlloc_t2 >;
     customAlloc_ihw2Arr test_ihw2Arr2(limmit+1);
     test<customAlloc_ihw2Arr> (test_ihw2Arr2, limmit);
-
     
-
 }
