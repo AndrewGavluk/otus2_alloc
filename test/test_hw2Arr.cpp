@@ -242,8 +242,8 @@ TEST(gtest_testhw2Arr, testPush_back){
     t_push_back<int>({1,2,3,4,5}, 6);
     t_push_back<double>({1.0,2.0,3.0,4.0,5.0}, 6.0);
 
-    t_push_back<int, allocatorHW2<int, 15>>({1,2,3,4,5}, 6);
-    t_push_back<double, allocatorHW2<double, 15>>({1.0,2.0,3.0,4.0,5.0}, 6.0);
+    t_push_back<int, allocatorHW2<int, 6>>({1,2,3,4,5}, 6);
+    t_push_back<double, allocatorHW2<double, 6>>({1.0,2.0,3.0,4.0,5.0}, 6.0);
 }
 
 template_T_Alloc_default
@@ -361,8 +361,8 @@ TEST(gtest_testhw2Arr, test_resize){
     t_resize<int>({1, 2, 3, 4, 5});
     t_resize<double>({1.0, 2.0, 3.0, 4.0, 5.0});
 
-    t_resize<int, allocatorHW2<int, 11> >({1, 2, 3, 4, 5});
-    t_resize<double, allocatorHW2<double, 11> >({1.0, 2.0, 3.0, 4.0, 5.0});
+    t_resize<int, allocatorHW2<int, 5> >({1, 2, 3, 4, 5});
+    t_resize<double, allocatorHW2<double, 5> >({1.0, 2.0, 3.0, 4.0, 5.0});
 }
 
 template_T_Alloc_default
@@ -393,9 +393,6 @@ TEST(gtest_testhw2Arr, test_clear){
     t_clear<int, allocatorHW2<int, 5> >({1, 2, 3, 4, 5});
     t_clear<double, allocatorHW2<double, 5> >({1.0, 2.0, 3.0, 4.0, 5.0});
 }
-
-
-
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);

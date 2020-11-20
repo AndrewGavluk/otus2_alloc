@@ -20,8 +20,15 @@ class allocatorHW2
         using value_type = T;
         using type = T;
 
-        ~allocatorHW2(){};
-        allocatorHW2(){};
+        ~allocatorHW2(){
+          delete [] m_data;
+        };
+        allocatorHW2(){
+          m_size = N * sizeof(value_type);
+          m_data = new uint8_t[m_size];
+          m_flags = new bool[m_size];
+          std::fill(m_flags, m_flags+m_size, false);
+        };
         allocatorHW2(const allocatorHW2& other) : m_data(other.m_data), m_flags(other.m_flags) {};
         allocatorHW2(allocatorHW2&&other ){other.swap(*this);}
        
@@ -45,9 +52,11 @@ class allocatorHW2
         using other = allocatorHW2<U, N>;
       };
     private:
-
-        std::array<uint8_t, N * sizeof(value_type)> m_data;
-        std::array<bool, N> m_flags{{false}};
+        uint8_t* m_data;
+        bool* m_flags;
+        size_t m_size;
+        //std::array<uint8_t, N * sizeof(value_type)> m_data;
+        //std::array<bool, N> m_flags{{false}};
 
         void swap(allocatorHW2& other);
 };
@@ -91,23 +100,34 @@ template_T_size
 T* allocatorHW2<T, N>::allocate(size_t n){
     
     if (n == 0) return nullptr;
-    if (n > N) throw std::bad_alloc();
-
     if (n > static_cast<size_t>(-1) / sizeof(T)) throw std::bad_array_new_length();
+    if (n > m_size) 
+    {
+        int new_m_size = m_size + ( N * sizeof(value_type));
+        uint8_t* newm_data = new uint8_t[new_m_size];
+        bool* newm_flags = new bool[new_m_size];
 
-    auto first = m_flags.begin();
+        for (size_t i = 0; i< m_size; ++i)
+        {
+          newm_data[i] = m_data[i];
+          newm_flags[i] = m_flags[i];
+        }
+        m_size = new_m_size;
+    }
+
+    auto first = m_flags;
     size_t cnt = 0;
     
-    for(auto &it : m_flags) {
-        if(it) cnt = 0;
+    for(auto it = m_flags; it != (m_flags+m_size); ++it) {
+        if(!it) cnt = 0;
         else
         {
           if(cnt == 0)
-            first = &it;
+            first = it;
 
           if(++cnt == n) {
-            std::fill(first, (&it)+1, true);
-            auto pos = static_cast<size_t>(std::distance(m_flags.begin(), first));
+            std::fill(first, it+1, true);
+            auto pos = static_cast<size_t>(std::distance(m_flags, first));
             auto p =  reinterpret_cast<T *>(&m_data[sizeof(T) * pos]);
             if (!p)
               throw std::bad_alloc(); // not enough memory
@@ -123,7 +143,7 @@ void allocatorHW2<T, N>::deallocate(T* ptr, size_t n){
   if (!ptr) return;
   int pos = ptr - reinterpret_cast<pointer>(&m_data[0]);
   if(pos >= 0 && pos + static_cast<int>(n) < static_cast<int>(N)) {
-        auto first = m_flags.begin() + pos;
+        auto first = m_flags + pos;
         auto last  = first + static_cast<int>(n);
         std::fill(first, last, false);
   }
