@@ -29,7 +29,7 @@ class allocatorHW2
           m_flags = new bool[m_size];
           std::fill(m_flags, m_flags+m_size, false);
         };
-        allocatorHW2(const allocatorHW2& other) : m_data(other.m_data), m_flags(other.m_flags) {};
+        allocatorHW2(const allocatorHW2& other);
         allocatorHW2(allocatorHW2&&other ){other.swap(*this);}
        
         allocatorHW2& operator = (const allocatorHW2&) ;
@@ -55,11 +55,23 @@ class allocatorHW2
         uint8_t* m_data;
         bool* m_flags;
         size_t m_size;
-        //std::array<uint8_t, N * sizeof(value_type)> m_data;
-        //std::array<bool, N> m_flags{{false}};
 
         void swap(allocatorHW2& other);
 };
+
+template_T_size
+allocatorHW2<T, N>::allocatorHW2(const allocatorHW2& other)
+{
+    m_size = other.m_data;
+    m_data = new uint8_t[m_size];
+    m_flags = new bool[m_size];
+
+    for (size_t i = 0; i < m_size; ++i)
+    {
+        m_data[i] = other.m_data[i];
+        m_flags[i] = other.m_flags[i];
+    }
+}
 
 template_T_size
  allocatorHW2<T, N>&  allocatorHW2<T, N>::operator=(const allocatorHW2& other) { 
