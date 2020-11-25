@@ -10,7 +10,6 @@ template <typename T, size_t N = 0>
 class allocatorHW2
 {
     public:
-
         using size_type = size_t;
         using difference_type = std::ptrdiff_t;
         using pointer = T*;
@@ -22,6 +21,7 @@ class allocatorHW2
 
         ~allocatorHW2(){
           delete [] m_data;
+          delete [] m_flags;
         };
         allocatorHW2(){
           m_size = N * sizeof(value_type);
@@ -62,7 +62,7 @@ class allocatorHW2
 template_T_size
 allocatorHW2<T, N>::allocatorHW2(const allocatorHW2& other)
 {
-    m_size = other.m_data;
+    m_size = other.m_size;
     m_data = new uint8_t[m_size];
     m_flags = new bool[m_size];
 
@@ -125,6 +125,12 @@ T* allocatorHW2<T, N>::allocate(size_t n){
           newm_flags[i] = m_flags[i];
         }
         m_size = new_m_size;
+        
+        delete [] m_data;
+        delete [] m_flags;
+
+        m_data = newm_data;
+        m_flags = newm_flags;
     }
 
     auto first = m_flags;

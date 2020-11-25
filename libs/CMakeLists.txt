@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 
 add_library(libL2_container STATIC hw2Arr.cpp hw2Arr.h)
-add_library(libL2_allocator STATIC  Alloc.cpp Alloc.h)
+add_library(libL2_allocator STATIC Alloc.cpp Alloc.h)
 
 set_target_properties(libL2_container PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON)
 set_target_properties(libL2_allocator PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON)
