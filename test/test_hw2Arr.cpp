@@ -303,7 +303,6 @@ void t_bracketsOperatorCase(const  std::unique_ptr< hw2Array<T, Alloc> > & testi
         ASSERT_TRUE(what == expected);}
     catch(...){
         ASSERT_TRUE(false);}
-
 }
 
 template_T_Alloc_default
@@ -355,6 +354,14 @@ void t_resize(const std::initializer_list<T>& value){
 
     t_bracketsOperatorCase<T, Alloc> (testint, -1);
     t_bracketsOperatorCase<T, Alloc> (testint, value.size());
+
+    // resize 4 times
+    const int times = 4;
+    testint->resize(sizeValue*times);
+    checkArray<T, Alloc>(testint, value, sizeValue-1);
+
+    t_bracketsOperatorCase<T, Alloc> (testint, -1);
+    t_bracketsOperatorCase<T, Alloc> (testint, value.size()*times);
 }
 
 TEST(gtest_testhw2Arr, test_resize){

@@ -16,7 +16,7 @@ else()
 	target_compile_options(gtestHW2Arr PRIVATE -Wall -Wextra -pedantic -Werror)
 endif()
 
-target_link_libraries(gtestHW2Arr gtest pthread libL2_container libL2_allocator)
+target_link_libraries(gtestHW2Arr gtest pthread)
 
 
 add_test(gtest_testhw2Arr gtestHW2Arr)

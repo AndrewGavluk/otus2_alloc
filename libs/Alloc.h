@@ -2,6 +2,7 @@
 #include <array>
 #include <cstddef>
 #include <iostream>
+#include <cmath>
 
 #define template_T_size template <typename T, size_t N>
 
@@ -25,7 +26,7 @@ class allocatorHW2
         };
         allocatorHW2(){
           m_size = N * sizeof(value_type);
-          m_data = new uint8_t[m_size];
+          m_data = new uint8_t[m_size * sizeof(T)];
           m_flags = new bool[m_size];
           std::fill(m_flags, m_flags+m_size, false);
         };
@@ -63,14 +64,14 @@ template_T_size
 allocatorHW2<T, N>::allocatorHW2(const allocatorHW2& other)
 {
     m_size = other.m_size;
-    m_data = new uint8_t[m_size];
+    m_data = new uint8_t[m_size * sizeof(T)];
     m_flags = new bool[m_size];
 
     for (size_t i = 0; i < m_size; ++i)
-    {
-        m_data[i] = other.m_data[i];
         m_flags[i] = other.m_flags[i];
-    }
+
+    for (size_t i = 0; i < m_size * sizeof(T); ++i)
+        m_data[i] = other.m_data[i];
 }
 
 template_T_size
@@ -113,47 +114,50 @@ T* allocatorHW2<T, N>::allocate(size_t n){
     
     if (n == 0) return nullptr;
     if (n > static_cast<size_t>(-1) / sizeof(T)) throw std::bad_array_new_length();
-    if (n > m_size) 
-    {
-        int new_m_size = m_size + ( N * sizeof(value_type));
-        uint8_t* newm_data = new uint8_t[new_m_size];
-        bool* newm_flags = new bool[new_m_size];
-
-        for (size_t i = 0; i< m_size; ++i)
-        {
-          newm_data[i] = m_data[i];
-          newm_flags[i] = m_flags[i];
-        }
-        m_size = new_m_size;
-        
-        delete [] m_data;
-        delete [] m_flags;
-
-        m_data = newm_data;
-        m_flags = newm_flags;
-    }
-
-    auto first = m_flags;
-    size_t cnt = 0;
     
-    for(auto it = m_flags; it != (m_flags+m_size); ++it) {
-        if(!it) cnt = 0;
-        else
-        {
-          if(cnt == 0)
-            first = it;
-
-          if(++cnt == n) {
-            std::fill(first, it+1, true);
-            auto pos = static_cast<size_t>(std::distance(m_flags, first));
-            auto p =  reinterpret_cast<T *>(&m_data[sizeof(T) * pos]);
-            if (!p)
-              throw std::bad_alloc(); // not enough memory
-            return p;
-          }
-        }        
+    size_t maxSequense{0};
+    for (size_t i = 0,  buf{0}; i<m_size; ++i)
+    {
+      // search free sequence of n bytes
+      // if found, return it pointer
+      if (maxSequense==n)
+      {
+        std::fill(&m_flags[i-n], &m_flags[i], true);
+        T *p = reinterpret_cast<T *>(&m_data[ sizeof(value_type) * (i-n)]);
+        if (!p)
+          throw std::bad_alloc(); // somethink gone bad :(
+        return p;
+      }
+      // search
+      m_flags[i] ? buf=0 : maxSequense = std::max(maxSequense, ++buf);
     }
-    throw std::bad_alloc(); // not enough memory
+
+    size_t new_m_size = m_size + (ceil(n/(N)) * N);
+    uint8_t* newm_data = new uint8_t[new_m_size * sizeof(T)];
+    bool* newm_flags = new bool[new_m_size];
+
+    for (size_t i = 0; i< m_size; ++i)
+    {
+      newm_data[i] = m_data[i];
+      newm_flags[i] = m_flags[i];
+    }
+        
+    delete [] m_data;
+    delete [] m_flags;
+
+    // init new memory
+    m_data = newm_data;
+    m_flags = newm_flags;
+    
+    std::fill(&m_flags[m_size], &m_flags[m_size + n], true);
+    if ( (m_size + n + 1) < new_m_size )
+      std::fill(&m_flags[m_size + n + 1], &m_flags[new_m_size], false);
+
+    auto p = reinterpret_cast<T *>(&m_data[ sizeof(T) * m_size]);
+    m_size = new_m_size;
+    if (!p)
+      throw std::bad_alloc(); // somethink gone bad :(
+    return p;
 }
 
 template_T_size 
