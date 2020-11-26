@@ -53,6 +53,7 @@ class allocatorHW2
         using other = allocatorHW2<U, N>;
       };
     private:
+        T* findEmpty(size_type n); // call from allocate
         uint8_t* m_data;
         bool* m_flags;
         size_t m_size;
@@ -115,22 +116,9 @@ T* allocatorHW2<T, N>::allocate(size_t n){
     if (n == 0) return nullptr;
     if (n > static_cast<size_t>(-1) / sizeof(T)) throw std::bad_array_new_length();
     
-    size_t maxSequense{0};
-    for (size_t i = 0,  buf{0}; i<m_size; ++i)
-    {
-      // search free sequence of n bytes
-      // if found, return it pointer
-      if (maxSequense==n)
-      {
-        std::fill(&m_flags[i-n], &m_flags[i], true);
-        T *p = reinterpret_cast<T *>(&m_data[ sizeof(value_type) * (i-n)]);
-        if (!p)
-          throw std::bad_alloc(); // somethink gone bad :(
-        return p;
-      }
-      // search
-      m_flags[i] ? buf=0 : maxSequense = std::max(maxSequense, ++buf);
-    }
+    auto found = findEmpty(n);
+    if (found!=nullptr)
+      return found;
 
     size_t new_m_size = m_size + (ceil(n/(N)) * N);
     uint8_t* newm_data = new uint8_t[new_m_size * sizeof(T)];
@@ -149,15 +137,31 @@ T* allocatorHW2<T, N>::allocate(size_t n){
     m_data = newm_data;
     m_flags = newm_flags;
     
-    std::fill(&m_flags[m_size], &m_flags[m_size + n], true);
-    if ( (m_size + n + 1) < new_m_size )
-      std::fill(&m_flags[m_size + n + 1], &m_flags[new_m_size], false);
-
-    auto p = reinterpret_cast<T *>(&m_data[ sizeof(T) * m_size]);
+    std::fill(&m_flags[m_size], &m_flags[new_m_size], false);
     m_size = new_m_size;
-    if (!p)
-      throw std::bad_alloc(); // somethink gone bad :(
-    return p;
+
+    return findEmpty(n);
+}
+
+template_T_size 
+T* allocatorHW2<T, N>::findEmpty(size_t n){
+    size_t maxSequense{0};
+    for (size_t i = 0,  buf{0}; i<m_size; ++i)
+    {
+      // search free sequence of n bytes
+      // if found, return it pointer
+      if (maxSequense==n)
+      {
+        std::fill(&m_flags[i-n], &m_flags[i], true);
+        T *p = reinterpret_cast<T *>(&m_data[ sizeof(value_type) * (i-n)]);
+        if (!p)
+          throw std::bad_alloc(); // somethink gone bad :(
+        return p;
+      }
+      // search
+      m_flags[i] ? buf=0 : maxSequense = std::max(maxSequense, ++buf);
+    }
+    return nullptr;
 }
 
 template_T_size 
