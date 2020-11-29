@@ -20,16 +20,9 @@ class allocatorHW2
         using value_type = T;
         using type = T;
 
-        ~allocatorHW2(){
-          delete [] m_data;
-          delete [] m_flags;
-        };
-        allocatorHW2(){
-          m_size = N * sizeof(value_type);
-          m_data = new uint8_t[m_size * sizeof(T)];
-          m_flags = new bool[m_size];
-          std::fill(m_flags, m_flags+m_size, false);
-        };
+        ~allocatorHW2(){};
+
+        allocatorHW2(){};
         allocatorHW2(const allocatorHW2& other);
         allocatorHW2(allocatorHW2&&other ){other.swap(*this);}
        
