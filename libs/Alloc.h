@@ -119,14 +119,8 @@ T* allocatorHW2<T, N>::allocate(size_t n){
     bool* newm_flags = new bool[new_m_size];
 
     if (m_flags){
-        for (size_t i = 0; i< m_size; ++i)
-        {
-          newm_data[i] = m_data[i];
-          newm_flags[i] = m_flags[i];
-        }
-            
-        delete [] m_data;
-        delete [] m_flags;
+        std::copy(&m_flags[0], &m_flags[m_size], newm_flags);
+        std::copy(&m_data[0], &m_data[m_size * sizeof(T)], newm_data);
     }
 
     // init new memory
@@ -152,7 +146,7 @@ T* allocatorHW2<T, N>::findEmpty(size_t n){
       {
         ++i;
         std::fill(&m_flags[i-n], &m_flags[i], true);
-        T *p = reinterpret_cast<T *>(&m_data[ sizeof(value_type) * (i-n)]);
+        T *p = reinterpret_cast<T *>(&m_data[0]);
         if (!p)
           throw std::bad_alloc(); // somethink gone bad :(
         return p;
