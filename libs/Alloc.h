@@ -22,7 +22,7 @@ class allocatorHW2
 
         ~allocatorHW2(){};
 
-        allocatorHW2(){};
+        allocatorHW2() : m_size{0}, m_data{nullptr}, m_flags{nullptr} {};
         allocatorHW2(const allocatorHW2& other);
         allocatorHW2(allocatorHW2&&other ){other.swap(*this);}
        
@@ -47,9 +47,10 @@ class allocatorHW2
       };
     private:
         T* findEmpty(size_type n); // call from allocate
+        size_t m_size;
         uint8_t* m_data;
         bool* m_flags;
-        size_t m_size;
+        
 
         void swap(allocatorHW2& other);
 };
