@@ -114,18 +114,20 @@ T* allocatorHW2<T, N>::allocate(size_t n){
     if (found!=nullptr)
       return found;
 
-    size_t new_m_size = m_size + (ceil(n/(N)) * N);
+    size_t new_m_size = m_size + (((n+N-1)/N) * N);   // (n+N-1)/N - fast ceil(n/N)
     uint8_t* newm_data = new uint8_t[new_m_size * sizeof(T)];
     bool* newm_flags = new bool[new_m_size];
 
-    for (size_t i = 0; i< m_size; ++i)
-    {
-      newm_data[i] = m_data[i];
-      newm_flags[i] = m_flags[i];
+    if (m_flags){
+        for (size_t i = 0; i< m_size; ++i)
+        {
+          newm_data[i] = m_data[i];
+          newm_flags[i] = m_flags[i];
+        }
+            
+        delete [] m_data;
+        delete [] m_flags;
     }
-        
-    delete [] m_data;
-    delete [] m_flags;
 
     // init new memory
     m_data = newm_data;
@@ -142,18 +144,20 @@ T* allocatorHW2<T, N>::findEmpty(size_t n){
     size_t maxSequense{0};
     for (size_t i = 0,  buf{0}; i<m_size; ++i)
     {
+      // search
+      m_flags[i] ? buf=0 : maxSequense = std::max(maxSequense, ++buf);
       // search free sequence of n bytes
       // if found, return it pointer
-      if (maxSequense==n)
+      if (maxSequense==n && i<m_size)
       {
+        ++i;
         std::fill(&m_flags[i-n], &m_flags[i], true);
         T *p = reinterpret_cast<T *>(&m_data[ sizeof(value_type) * (i-n)]);
         if (!p)
           throw std::bad_alloc(); // somethink gone bad :(
         return p;
       }
-      // search
-      m_flags[i] ? buf=0 : maxSequense = std::max(maxSequense, ++buf);
+
     }
     return nullptr;
 }
